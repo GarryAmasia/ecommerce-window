@@ -11,8 +11,8 @@ Content-Type: application/json
     "fName" : "garry",
     "lName" : "amasia",
     "dob" : "1987-11-23",
-    "phone" : "0430598828",
-    "email" : "kkkk@outlook.com",
+    "phone" : "040598828",
+    "email" : "jimmy@outlook.com",
     "password" : "123123",
     "address" : "westmead"
 

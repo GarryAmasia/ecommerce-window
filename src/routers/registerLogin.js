@@ -1,7 +1,12 @@
 import express from "express";
 import { hashPassword } from "../helpers/bcryptHelper.js";
 import { adminRegistrationValidation } from "../middlewares/validationMiddlewares.js";
-import { createNewAdmin } from "../models/adminUser/adminUserModel.js";
+import {
+  createNewAdmin,
+  updateAdmin,
+} from "../models/adminUser/adminUserModel.js";
+import { v4 as uuidv4 } from "uuid";
+import { sendAdminUserVerificationMail } from "../helpers/emailHelper.js";
 
 const route = express.Router();
 
@@ -24,17 +29,34 @@ route.post("/", adminRegistrationValidation, async (req, res, next) => {
 
     req.body.password = hashPassword(req.body.password);
 
+    const verificationCode = uuidv4();
+
+    req.body.verificationCode = verificationCode;
+
     // console.log(hashedPass);
     //2.call model to run save query
 
     const result = await createNewAdmin(req.body);
 
     //message:mongo connected & server running at
-    console.log(result);
 
     //3. unique url endpoint and send that to customer
+
+    if (result?._id) {
+      console.log(result);
+
+      sendAdminUserVerificationMail(result);
+
+      return res.json({
+        status: "success",
+        message:
+          "we have sent you an email,please check your email and follow the instruction to activate your account",
+      });
+    }
+
     res.json({
-      message: "todo",
+      status: "error",
+      message: "Unable to create user atm, please try again later",
     });
   } catch (error) {
     if (error.message.includes("E11000 duplicate key error collection")) {
@@ -42,6 +64,36 @@ route.post("/", adminRegistrationValidation, async (req, res, next) => {
       error.message =
         "There is already registered user with this email, please login or try to use different email..THANK YOU";
     }
+    next(error);
+  }
+});
+
+route.patch("/", async (req, res, next) => {
+  try {
+    const { email, verificationCode } = req.body;
+    if (email && verificationCode) {
+      console.log(req.body);
+      const filter = { email, verificationCode };
+      const obj = {
+        status: "active",
+        // verificationCode: "",
+      };
+
+      const result = await updateAdmin(filter, obj);
+
+      if (result?._id) {
+        return res.json({
+          status: "success",
+          message: "Your account has been activated, you may sign in now",
+        });
+      }
+    }
+
+    res.json({
+      status: "error",
+      message: "invalid or expired link",
+    });
+  } catch (error) {
     next(error);
   }
 });

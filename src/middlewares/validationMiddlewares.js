@@ -16,6 +16,7 @@ export const adminRegistrationValidation = (req, res, next) => {
       })
       .max(50)
       .required(),
+
     password: Joi.string().min(6).max(100).required(),
     address: Joi.string().allow("").max(100),
   });

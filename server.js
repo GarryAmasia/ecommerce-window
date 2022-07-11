@@ -3,6 +3,7 @@ import express from "express";
 import helmet from "helmet";
 import morgan from "morgan";
 import { mongoConnect } from "./src/config/dbConfig.js";
+import cors from "cors";
 
 const app = express();
 
@@ -10,6 +11,7 @@ const PORT = process.env.PORT || 8000;
 // console.log(process.env.PORT);
 
 //use middlewares
+app.use(cors());
 app.use(helmet());
 app.use(morgan("tiny"));
 app.use(express.json());
@@ -22,15 +24,16 @@ import registerLoginRouter from "./src/routers/registerLogin.js";
 app.use("/api/v1/register-login", registerLoginRouter);
 
 app.get("/", (req, res) => {
-  //   res.json({
-  //     message: "you reach e-commerce api",
-  //   });
-  res.send("<h1>hi there</h1>");
+  res.json({
+    message: "you reach e-commerce api",
+  });
+  //   res.send("<h1>hi there</h1>");
 });
 
 //custom global error handler
-app.use((error, req, res) => {
+app.use((error, req, res, next) => {
   console.log(error.message);
+
   const status = error.status || 404;
   res.status(status).json({
     status: "error",
