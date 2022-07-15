@@ -34,3 +34,29 @@ export const adminRegistrationValidation = (req, res, next) => {
   //   console.log(result);
   //   next();
 };
+
+export const loginValidation = (req, res, next) => {
+  const schema = Joi.object({
+    email: Joi.string()
+      .email({
+        minDomainSegments: 2,
+      })
+      .max(50)
+      .required(),
+
+    password: Joi.string().min(6).max(100).required(),
+  });
+
+  const { error, value } = schema.validate(req.body);
+  if (error) {
+    return res.json({
+      status: "error",
+      message: error.message,
+    });
+  }
+
+  next();
+  //   console.log(error.message);
+  //   console.log(result);
+  //   next();
+};

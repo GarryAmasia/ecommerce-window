@@ -8,6 +8,11 @@ export const updateAdmin = (filter, obj) => {
   return AdminSchema.findOneAndUpdate(filter, obj, { new: true });
 };
 
+//filter must be object
+export const getOneAdmin = (filter) => {
+  return AdminSchema.findOne(filter);
+};
+
 // export const updateVerificationCodeByUserId = (_id, verificationCode) => {
 //   return AdminSchema.findByIdAndUpdate(_id, {
 //     verificationCode,

@@ -1,8 +1,12 @@
 import express from "express";
 import { hashPassword } from "../helpers/bcryptHelper.js";
-import { adminRegistrationValidation } from "../middlewares/validationMiddlewares.js";
+import {
+  adminRegistrationValidation,
+  loginValidation,
+} from "../middlewares/validationMiddlewares.js";
 import {
   createNewAdmin,
+  getOneAdmin,
   updateAdmin,
 } from "../models/adminUser/adminUserModel.js";
 import { v4 as uuidv4 } from "uuid";
@@ -17,6 +21,7 @@ const route = express.Router();
 //   next();
 // });
 
+//--------------------ADMIN USER REGISTER-----------------
 route.post("/", adminRegistrationValidation, async (req, res, next) => {
   try {
     console.log(req.body);
@@ -76,7 +81,7 @@ route.patch("/", async (req, res, next) => {
       const filter = { email, verificationCode };
       const obj = {
         status: "active",
-        // verificationCode: "",
+        verificationCode: "",
       };
 
       const result = await updateAdmin(filter, obj);
@@ -93,6 +98,20 @@ route.patch("/", async (req, res, next) => {
       status: "error",
       message: "invalid or expired link",
     });
+  } catch (error) {
+    next(error);
+  }
+});
+
+//--------------------ADMIN USER LOGIN-----------------
+
+route.post("/login", loginValidation, async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
+    // console.log(req.body);
+    const result = await getOneAdmin({ email });
+    console.log(result);
+    //{email:"prem@dc.com"}
   } catch (error) {
     next(error);
   }

@@ -12,8 +12,18 @@ Content-Type: application/json
     "lName" : "amasia",
     "dob" : "1987-11-23",
     "phone" : "040598828",
-    "email" : "jimmy@outlook.com",
+    "email" : "celine@outlook.com",
     "password" : "123123",
     "address" : "westmead"
 
+}
+
+
+### Admin login
+POST http://localhost:8000/api/v1/register-login/login
+Content-Type: application/json
+
+{
+    "email" : "haha@outlook.com",
+    "password" : "123123"
 }
